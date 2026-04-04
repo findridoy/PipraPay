@@ -1,0 +1,50 @@
+services:
+  piprapay:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: piprapay
+    ports:
+      - "8080:80"
+    environment:
+      # MySQL Database Configuration (External)
+      - DB_HOST=${DB_HOST:-localhost}
+      - DB_PORT=${DB_PORT:-3306}
+      - DB_NAME=${DB_NAME:-piprapay}
+      - DB_USER=${DB_USER:-piprapay}
+      - DB_PASS=${DB_PASS:-}
+      - DB_PREFIX=${DB_PREFIX:-pp_}
+      
+      # Admin Account Configuration
+      - ADMIN_NAME=${ADMIN_NAME:-Administrator}
+      - ADMIN_EMAIL=${ADMIN_EMAIL:-admin@example.com}
+      - ADMIN_USERNAME=${ADMIN_USERNAME:-admin}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-}
+      
+      # Setup Options
+      - SKIP_AUTO_SETUP=${SKIP_AUTO_SETUP:-false}
+      - FORCE_SETUP=${FORCE_SETUP:-false}
+      
+      # PHP Configuration
+      - PHP_MEMORY_LIMIT=${PHP_MEMORY_LIMIT:-256M}
+      - PHP_UPLOAD_MAX_FILESIZE=${PHP_UPLOAD_MAX_FILESIZE:-64M}
+      - PHP_POST_MAX_SIZE=${PHP_POST_MAX_SIZE:-64M}
+      - PHP_MAX_EXECUTION_TIME=${PHP_MAX_EXECUTION_TIME:-300}
+    volumes:
+      # Persist user uploads
+      - piprapay-media:/var/www/html/pp-media
+      # Persist setup completion marker only (config is recreated)
+      - piprapay-data:/var/www/html/.setup-complete
+    restart: unless-stopped
+    networks:
+      - piprapay-network
+
+volumes:
+  piprapay-media:
+    driver: local
+  piprapay-data:
+    driver: local
+
+networks:
+  piprapay-network:
+    driver: bridge
