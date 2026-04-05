@@ -86,5 +86,6 @@ RUN chown -R www-data:www-data /var/www/html \
 # Expose port 80 (will be mapped to 8080 via docker-compose)
 EXPOSE 80
 
-# Set entrypoint
-ENTRYPOINT ["docker-entrypoint.sh"]
+# Use CMD instead of ENTRYPOINT to avoid Railway override issues
+# The script will handle MPM configuration at runtime
+CMD ["/usr/local/bin/docker-entrypoint.sh"]

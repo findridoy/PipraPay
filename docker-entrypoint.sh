@@ -437,6 +437,11 @@ main() {
     echo "[PipraPay Setup] Starting PipraPay Auto-Configuration..."
     echo "[PipraPay Setup] ========================================="
     
+    # Force correct Apache MPM at runtime (Railway workaround)
+    echo "[PipraPay Setup] Configuring Apache MPM..."
+    a2dismod mpm_event mpm_worker 2>/dev/null || true
+    a2enmod mpm_prefork 2>/dev/null || true
+    
     # Skip setup if requested
     if [ "${SKIP_AUTO_SETUP:-false}" = "true" ]; then
         echo "[PipraPay Setup] SKIP_AUTO_SETUP is true, using web installer..."
