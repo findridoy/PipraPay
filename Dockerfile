@@ -32,6 +32,11 @@ RUN pecl install imagick \
 # Enable Apache mod_rewrite for URL rewriting
 RUN a2enmod rewrite
 
+# Configure Apache MPM for prefork (required for imagick compatibility)
+RUN a2dismod mpm_event && \
+    a2dismod mpm_worker && \
+    a2enmod mpm_prefork
+
 # Set PHP configuration for bcscale (required by PipraPay)
 RUN echo "bcmath.scale=8" >> /usr/local/etc/php/conf.d/bcmath.ini
 
@@ -55,6 +60,10 @@ RUN sed -i 's!/var/www/html!/var/www/html!g' /etc/apache2/sites-available/000-de
     echo '</Directory>'; \
     } >> /etc/apache2/conf-available/piprapay.conf \
     && a2enconf piprapay
+
+# Set Apache ServerName and DirectoryIndex
+RUN echo "ServerName 0.0.0.0" >> /etc/apache2/apache2.conf && \
+    echo "DirectoryIndex index.php index.html" >> /etc/apache2/apache2.conf
 
 # Create pp-media directory and set permissions for uploads
 RUN mkdir -p /var/www/html/pp-media \
