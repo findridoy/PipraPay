@@ -892,11 +892,80 @@
 
                                         $response_transaction = json_decode(getData($db_prefix.'transaction','WHERE ref = :ref', '* FROM', $params),true);
                                         if($response_transaction['status'] == true){
+                                            if (($response_transaction['response'][0]['status'] ?? '') !== 'completed') {
+                                                http_response_code(400);
+                                                echo json_encode([
+                                                    'error' => [
+                                                        'code' => 'INVALID_STATUS',
+                                                        'message' => 'Only completed transactions can be refunded.'
+                                                    ]
+                                                ]);
+                                                exit;
+                                            }
+
+                                            $transactionRow = $response_transaction['response'][0];
+                                            $refundResult = null;
+
+                                            $params = [ ':gateway_id' => $transactionRow['gateway_id'], ':brand_id' => $transactionRow['brand_id'] ];
+                                            $response_gateway_info = json_decode(getData($db_prefix.'gateways','WHERE gateway_id = :gateway_id AND brand_id = :brand_id', '* FROM', $params),true);
+                                            $gateway_slug = $response_gateway_info['response'][0]['slug'] ?? '';
+
+                                            if ($gateway_slug === 'bkash-api-tokenized') {
+                                                $refundPayload = [
+                                                    'amount' => money_round($transactionRow['local_net_amount']),
+                                                    'sku' => $transactionRow['ref'],
+                                                    'reason' => 'API refund'
+                                                ];
+
+                                                $refundResult = pp_bkash_tokenized_refund($transactionRow, $refundPayload);
+
+                                                if (empty($refundResult['status'])) {
+                                                    http_response_code(400);
+                                                    echo json_encode([
+                                                        'error' => [
+                                                            'code' => 'REFUND_FAILED',
+                                                            'message' => $refundResult['message'] ?? 'Refund failed.'
+                                                        ]
+                                                    ]);
+                                                    exit;
+                                                }
+                                            }
+
+                                            $source_info = json_decode($transactionRow['source_info'], true) ?: [];
+                                            $source_info_changed = false;
+
+                                            if (!empty($refundResult['data'])) {
+                                                $refundTrxId = $refundResult['data']['refundTrxId'] ?? '';
+                                                $refundAmount = $refundResult['data']['refundAmount'] ?? '';
+                                                $completedTime = $refundResult['data']['completedTime'] ?? '';
+
+                                                if ($refundTrxId !== '') {
+                                                    $source_info[] = ['label' => 'Refund TrxID', 'value' => $refundTrxId];
+                                                    $source_info_changed = true;
+                                                }
+                                                if ($refundAmount !== '') {
+                                                    $source_info[] = ['label' => 'Refund Amount', 'value' => $refundAmount];
+                                                    $source_info_changed = true;
+                                                }
+                                                if ($completedTime !== '') {
+                                                    $source_info[] = ['label' => 'Refund Time', 'value' => $completedTime];
+                                                    $source_info_changed = true;
+                                                }
+                                            }
+
                                             $columns = ['status',  'updated_date'];
                                             $values = ['refunded', getCurrentDatetime('Y-m-d H:i:s')];
                                             $condition = 'id ="'.$response_transaction['response'][0]['id'].'"'; 
 
+                                            if ($source_info_changed) {
+                                                $columns[] = 'source_info';
+                                                $values[] = json_encode($source_info, JSON_UNESCAPED_UNICODE);
+                                                $response_transaction['response'][0]['source_info'] = json_encode($source_info, JSON_UNESCAPED_UNICODE);
+                                            }
+
                                             updateData($db_prefix.'transaction', $columns, $values, $condition);
+
+                                            $response_transaction['response'][0]['status'] = 'refunded';
 
 
                                             $metadata = json_decode($response_transaction['response'][0]['metadata'], true) ?: [];
