@@ -181,10 +181,14 @@
                 
                 $data_gateway = json_decode($response, true);
 
-                if (isset($data_gateway[0]['bank_status']) && $data_gateway[0]['bank_status'] == "Success") {
-                    $order_id = $data_gateway[0]['customer_order_id'];
+                $sp_code = $data_gateway[0]['sp_code'] ?? '';
+                $bank_status = $data_gateway[0]['bank_status'] ?? '';
 
-                    $after_bp = explode('BP-', $order_id)[1];
+                if ($sp_code == "1000" || $bank_status == "Success") {
+                    $customer_order_id = $data_gateway[0]['customer_order_id'];
+
+                    $parts = explode('BP-', $customer_order_id);
+                    $after_bp = $parts[1] ?? '';
 
                     $moreinfo = [
                         [
@@ -204,8 +208,16 @@
                     pp_set_transaction_status($after_bp, 'completed', $data['gateway']['gateway_id'], $data_gateway[0]['bank_trx_id'], $moreinfo);
 
                     echo "<script>location.href='".pp_checkout_address($after_bp)."';</script>";
-                }else{
-                    echo 'Direct access detected!';
+                } else {
+                    $customer_order_id = $data_gateway[0]['customer_order_id'] ?? '';
+                    $parts = explode('BP-', $customer_order_id);
+                    $after_bp = $parts[1] ?? '';
+
+                    if (!empty($after_bp)) {
+                        pp_set_transaction_status($after_bp, 'canceled', $data['gateway']['gateway_id'], '', []);
+                    }
+
+                    echo "<script>location.href='".pp_checkout_address()."';</script>";
                 }
             }
         }
