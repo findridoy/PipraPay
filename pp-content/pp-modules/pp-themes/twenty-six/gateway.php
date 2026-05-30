@@ -278,7 +278,7 @@
                             <select class="form-select" id="model-languages" onchange="hitLanguage()">
                                 <option value="" selected><?php echo $data['lang']['select_a_language']?></option>
                                 <?php
-                                    foreach ($gateway_info['supported_languages'] as $code => $language) {
+                                    foreach ($gateway_info['supported_languages'] ?? [] as $code => $language) {
                                 ?>
                                             <option value="<?= htmlspecialchars($code) ?>">
                                                 <?= htmlspecialchars($language) ?>
@@ -302,12 +302,21 @@
     ?>
 
     <script data-cfasync="false">
+        var ppLang = {
+            copied:        '<?php echo addslashes($data['lang']['copied_successfully'])?>',
+            copiedDesc:    '<?php echo addslashes($data['lang']['copy_content_copied'])?>',
+            copyFailed:    '<?php echo addslashes($data['lang']['copy_failed'])?>',
+            copyFailedDesc:'<?php echo addslashes($data['lang']['copy_failed_text'])?>',
+            noContent:     '<?php echo addslashes($data['lang']['copy_no_content'])?>',
+            somethingWrong:'<?php echo addslashes($data['lang']['something_wrong'])?>',
+            supportText:   '<?php echo addslashes($data['lang']['support_contact_text'])?>',
+        };
+
         function copy_value(content){
             if (!content) {
-                // Show error if URL is empty
                 createToast({
-                    title: 'Error!',
-                    description: 'No content provided to copy.',
+                    title: ppLang.somethingWrong,
+                    description: ppLang.noContent,
                     svg: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#d63939" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-exclamation-circle"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M12 9v4" /><path d="M12 16v.01" /></svg>`,
                     timeout: 6000,
                     top: 20
@@ -315,21 +324,18 @@
                 return;
             }
 
-            // Use the Clipboard API
             navigator.clipboard.writeText(content).then(() => {
-                // Success toast
                 createToast({
-                    title: 'Copied Successfully',
-                    description: 'The content has been copied to your clipboard.',
+                    title: ppLang.copied,
+                    description: ppLang.copiedDesc,
                     svg: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#5f38f9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-circle-check"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M9 12l2 2l4 -4" /></svg>`,
                     timeout: 4000,
                     top: 20
                 });
             }).catch((err) => {
-                // Error toast
                 createToast({
-                    title: 'Failed!',
-                    description: 'Unable to copy the content. Please try manually.',
+                    title: ppLang.copyFailed,
+                    description: ppLang.copyFailedDesc,
                     svg: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#d63939" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-exclamation-circle"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M12 9v4" /><path d="M12 16v.01" /></svg>`,
                     timeout: 6000,
                     top: 20
@@ -381,7 +387,7 @@
                     Object.values(rows).forEach(r => r.style.display = 'none');
 
                     // Show selected row if it exists
-                    if (rows[tab]) rows[tab].style.display = 'flex';
+                    if (rows[tab]) rows[tab].style.display = rows[tab].classList.contains('row') ? 'flex' : 'block';
                 });
             });
 
@@ -428,8 +434,8 @@
                     },
                     error: function(xhr, status, error) {
                         createToast({
-                            title: 'Something Wrong!',
-                            description: 'For further assistance, please contact our support team.',
+                            title: ppLang.somethingWrong,
+                            description: ppLang.supportText,
                             svg: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#d63939" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-exclamation-circle"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M12 9v4" /><path d="M12 16v.01" /></svg>`,
                             timeout: 6000
                         });
