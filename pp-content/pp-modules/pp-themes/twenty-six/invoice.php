@@ -29,6 +29,38 @@
        echo pp_assets('head');
     ?>
 
+    <?php
+        $seoTitle = trim($data['options']['seo_title'] ?? '');
+        $seoDesc  = trim($data['options']['seo_description'] ?? '');
+        $seoKey   = trim($data['options']['seo_keywords'] ?? '');
+        $analyticsCode = trim($data['options']['analytics_code'] ?? '');
+
+        if ($seoTitle !== '' && $seoTitle !== '--') {
+            echo '<title>' . htmlspecialchars($seoTitle) . '</title>' . PHP_EOL;
+            echo '<meta name="title" content="' . htmlspecialchars($seoTitle) . '">' . PHP_EOL;
+            echo '<meta property="og:title" content="' . htmlspecialchars($seoTitle) . '">' . PHP_EOL;
+        }
+
+        if ($seoDesc !== '' && $seoDesc !== '--') {
+            echo '<meta name="description" content="' . htmlspecialchars($seoDesc) . '">' . PHP_EOL;
+            echo '<meta property="og:description" content="' . htmlspecialchars($seoDesc) . '">' . PHP_EOL;
+        }
+
+        if ($seoKey !== '' && $seoKey !== '--') {
+            echo '<meta name="keywords" content="' . htmlspecialchars($seoKey) . '">' . PHP_EOL;
+        }
+
+        if ($analyticsCode !== '' && $analyticsCode !== '--') {
+            echo $analyticsCode;
+        }
+
+        $bgStyle = 'background-color:#f8f9fa;';
+        if (!empty($data['options']['enable_bg_image']) && $data['options']['enable_bg_image'] === 'enabled' && !empty($data['options']['background_image'])) {
+            $bgImage = $data['options']['background_image'];
+            $bgStyle = "background-image: url('{$bgImage}'); background-size: cover; background-position: center; background-repeat: no-repeat; background-attachment: fixed;";
+        }
+    ?>
+
     <style>
         .container{
             margin-top: 20px !important;
@@ -71,7 +103,7 @@
         }
     </style>
 </head>
-<body style="background-color: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+<body style="<?= $bgStyle ?> font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
     <div class="container" style="max-width: 1000px; margin: 0 auto; background: white; border-radius: 4px; box-shadow: 0 2px 15px rgba(0,0,0,0.08);">
         <div class="padding-1">
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
@@ -92,7 +124,7 @@
                     </div>
                     <div>
                         <div style="font-size: 0.85rem; color: #6c757d; margin-bottom: 3px; text-transform: uppercase; letter-spacing: 0.5px;"> <?php echo $data['lang']['payment_method']?></div>
-                        <div style="font-size: 1rem; font-weight: 600; color: #2c3e50;"><?php echo ($data['invoice']['status'] == "paid") ? $data['invoice']['gateway'] : ''?></div>
+                        <div style="font-size: 1rem; font-weight: 600; color: #2c3e50;"><?php echo ($data['invoice']['status'] == "paid") ? htmlspecialchars($data['invoice']['gateway'] ?? '') : ''?></div>
                     </div>
                 </div>
                 
@@ -100,13 +132,13 @@
                    if($data['invoice']['status'] == "paid"){
                 ?>
                         <div style="padding: 6px 15px;border-radius: 20px;font-size: 0.85rem;font-weight: 600;background-color: #2fb3442e;color: #2fb344;margin-top: 10px;">
-                            <?php echo $data['lang']['badge_' . $data['invoice']['status']]; ?>
+                            <?php echo $data['lang']['badge_' . $data['invoice']['status']] ?? htmlspecialchars(ucfirst($data['invoice']['status'])); ?>
                         </div>
                 <?php
                    }else{
                 ?>
                         <div style="padding: 6px 15px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; background-color: rgba(231, 76, 60, 0.1); color: #e74c3c; margin-top: 10px;">
-                            <?php echo $data['lang']['badge_' . $data['invoice']['status']]; ?>
+                            <?php echo $data['lang']['badge_' . $data['invoice']['status']] ?? htmlspecialchars(ucfirst($data['invoice']['status'])); ?>
                         </div>
                 <?php
                    }
@@ -166,13 +198,13 @@
                                 $counter = 1;
                                 foreach ($data['items'] as &$item):
 
-                                    $itemTotalBeforeDiscount = $item['unitPrice'] * $item['quantity'];
+                                    $itemTotalBeforeDiscount = ($item['unitPrice'] ?? 0) * ($item['quantity'] ?? 0);
 
                                     $discountAmount = $item['discount'] ?? 0;
 
                                     $priceAfterDiscount = $itemTotalBeforeDiscount - $discountAmount;
 
-                                    $vatAmount = $priceAfterDiscount * ($item['vat'] / 100);
+                                    $vatAmount = $priceAfterDiscount * (($item['vat'] ?? 0) / 100);
 
                                     $item['total'] = $priceAfterDiscount + $vatAmount;
 
@@ -187,12 +219,13 @@
                                             <div style="color: #6c757d; font-size: 0.9rem;"><?= htmlspecialchars($item['description']); ?></div>
                                         </td>
                                         <td style="padding: 15px; border-bottom: 1px solid #dee2e6; text-align: center; vertical-align: middle;"><?= htmlspecialchars($item['quantity']); ?></td>
-                                        <td style="padding: 15px; border-bottom: 1px solid #dee2e6; text-align: right; vertical-align: middle;"><?= money_round($item['unitPrice'], 2).$data['invoice']['currency']; ?></td>
+                                        <td style="padding: 15px; border-bottom: 1px solid #dee2e6; text-align: right; vertical-align: middle;"><?= money_round($item['unitPrice'] ?? 0, 2).$data['invoice']['currency']; ?></td>
                                         <td style="padding: 15px; border-bottom: 1px solid #dee2e6; text-align: right; vertical-align: middle;"><?= money_round($item['total'], 2).$data['invoice']['currency']; ?></td>
                                     </tr>
                         <?php
                                     $counter++;
                                 endforeach;
+                                unset($item);
                             endif;
                         ?>
                     </tbody>
@@ -216,7 +249,7 @@
                         </div>
                         <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 1rem;">
                             <span> <?php echo $data['lang']['shipping']?>:</span>
-                            <span><?php echo money_round($data['invoice']['shippingFee'], 2).$data['invoice']['currency']?></span>
+                            <span><?php echo money_round($data['invoice']['shippingFee'] ?? 0, 2).$data['invoice']['currency']?></span>
                         </div>
                         <div style="display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 1rem;">
                             <span> <?php echo $data['lang']['tax']?>:</span>
@@ -232,14 +265,14 @@
                         ?>
                                 <div style="display: flex; justify-content: space-between; font-size: 1.2rem; font-weight: 600; color: #2fb344; border-top: 2px solid #dee2e6; padding-top: 15px; margin-top: 15px;">
                                     <span> <?php echo $data['lang']['total']?>:</span>
-                                    <span><?php echo money_round($grandTotal+$data['invoice']['shippingFee'], 2).$data['invoice']['currency']?></span>
+                                    <span><?php echo money_round($grandTotal + ($data['invoice']['shippingFee'] ?? 0), 2).$data['invoice']['currency']?></span>
                                 </div>
                         <?php
                             }else{
                         ?>
                                 <div style="display: flex; justify-content: space-between; font-size: 1.2rem; font-weight: 600; color: #e74c3c; border-top: 2px solid #dee2e6; padding-top: 15px; margin-top: 15px;">
                                     <span> <?php echo $data['lang']['total_due']?>:</span>
-                                    <span><?php echo money_round($grandTotal+$data['invoice']['shippingFee'], 2).$data['invoice']['currency']?></span>
+                                    <span><?php echo money_round($grandTotal + ($data['invoice']['shippingFee'] ?? 0), 2).$data['invoice']['currency']?></span>
                                 </div>
                         <?php
                             }
@@ -296,11 +329,9 @@
                         <div class="form-control-wrap">
                             <select class="form-select" id="model-languages" onchange="hitLanguage()">
                                 <option value="" selected><?php echo $data['lang']['select_a_language']?></option>
-                                <option value="en">English</option>
-                                <option value="bn">বাংলা</option>
-                                <option value="hi">हिन्दी</option>
-                                <option value="ur">اردو</option>
-                                <option value="ar">العربية</option>
+                                <?php foreach ($data['supported_languages'] ?? [] as $code => $language): ?>
+                                    <option value="<?= htmlspecialchars($code) ?>"><?= htmlspecialchars($language) ?></option>
+                                <?php endforeach; ?>
                             </select>
                         </div>
                     </div>
@@ -316,7 +347,7 @@
        echo pp_assets('footer');
     ?>
 
-    <script>
+    <script data-cfasync="false">
         function hitLanguage(){
             var language = document.querySelector("#model-languages").value;
 
@@ -354,8 +385,8 @@
                     },
                     error: function(xhr, status, error) {
                         createToast({
-                            title: 'Something Wrong!',
-                            description: 'For further assistance, please contact our support team.',
+                            title: '<?php echo addslashes($data['lang']['something_wrong'])?>',
+                            description: '<?php echo addslashes($data['lang']['support_contact_text'])?>',
                             svg: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#d63939" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-exclamation-circle"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M12 9v4" /><path d="M12 16v.01" /></svg>`,
                             timeout: 6000
                         });

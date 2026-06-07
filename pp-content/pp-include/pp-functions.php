@@ -83,11 +83,12 @@
     }
 
     function connectDatabase() {
-        global $db_host, $db_user, $db_pass, $db_name;
+        global $db_host, $db_port, $db_user, $db_pass, $db_name;
+        $db_port = $db_port ?? 3306; // fallback
 
-        try {
+    try {
             // Build DSN
-            $dsn = "mysql:host=$db_host;dbname=$db_name;charset=utf8mb4";
+            $dsn = "mysql:host=$db_host;port=$db_port;dbname=$db_name;charset=utf8mb4";
 
             // Create PDO instance
             $pdo = new PDO($dsn, $db_user, $db_pass, [
@@ -495,6 +496,96 @@
         $tmp = bcdiv($tmp, '10', 0); 
         return bcdiv($tmp, bcpow('10', (string)$decimals), $decimals);
     }
+
+    function pp_get_gateway_options($gateway_id = '', $brand_id = ''){
+        global $db_prefix;
+
+        $options = [];
+
+        if ($gateway_id === '' || $brand_id === '') {
+            return $options;
+        }
+
+        $params = [ ':gateway_id' => $gateway_id, ':brand_id' => $brand_id ];
+        $response_gateways_parameter = json_decode(getData($db_prefix.'gateways_parameter','WHERE gateway_id = :gateway_id AND brand_id = :brand_id', '* FROM', $params),true);
+
+        if ($response_gateways_parameter['status'] == true) {
+            foreach($response_gateways_parameter['response'] as $field){
+                $value = $field['value'];
+
+                if(!empty($field['multiple']) && !empty($value)){
+                    $value = is_array($value) ? $value : json_decode($value, true);
+                }
+
+                $options[$field['option_name']] = $value;
+            }
+        }
+
+        return $options;
+    }
+
+    function pp_bkash_tokenized_refund($transaction = [], $refund = []){
+        $gateway_id = $transaction['gateway_id'] ?? '';
+        $brand_id = $transaction['brand_id'] ?? '';
+
+        if ($gateway_id === '' || $brand_id === '') {
+            return [
+                'status' => false,
+                'message' => 'Gateway or brand not found.',
+            ];
+        }
+
+        $options = $refund['options'] ?? pp_get_gateway_options($gateway_id, $brand_id);
+
+        if (empty($options)) {
+            return [
+                'status' => false,
+                'message' => 'bKash configuration is missing.',
+            ];
+        }
+
+        if (isset($options['auto_refund']) && $options['auto_refund'] === 'off') {
+            return [
+                'status' => false,
+                'message' => 'Auto refund is disabled for this gateway.',
+            ];
+        }
+
+        $gateway_path = __DIR__ . '/../pp-modules/pp-gateways/bkash-api-tokenized/class.php';
+        if (!file_exists($gateway_path)) {
+            return [
+                'status' => false,
+                'message' => 'bKash gateway not installed.',
+            ];
+        }
+
+        require_once $gateway_path;
+
+        if (!class_exists('BkashApiTokenizedGateway')) {
+            return [
+                'status' => false,
+                'message' => 'bKash gateway class not found.',
+            ];
+        }
+
+        $gateway = new BkashApiTokenizedGateway();
+
+        if (!method_exists($gateway, 'refund')) {
+            return [
+                'status' => false,
+                'message' => 'Refund not supported by this gateway.',
+            ];
+        }
+
+        $payload = [
+            'transaction' => $transaction,
+            'options' => $options,
+            'refund' => $refund,
+        ];
+
+        return $gateway->refund($payload);
+    }
+
 
     function verifyPaymentTolerance(string $checkout, string $paid, string $tolerance): bool{
         $checkout  = money_round($checkout);
@@ -1959,7 +2050,7 @@
 
                 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/css/tabler-flags.min.css" />
                 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/css/tabler-payments.min.css" />
-                <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/css/tabler-social.min.css" />
+                <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/css/tabler-socials.min.css" />
                 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/css/tabler-vendors.min.css" />
 
                 <style>
@@ -3455,4 +3546,3 @@
             $this->offset = null;
         }
     }
-

@@ -29,6 +29,38 @@
        echo pp_assets('head');
     ?>
 
+    <?php
+        $seoTitle = trim($data['options']['seo_title'] ?? '');
+        $seoDesc  = trim($data['options']['seo_description'] ?? '');
+        $seoKey   = trim($data['options']['seo_keywords'] ?? '');
+        $analyticsCode = trim($data['options']['analytics_code'] ?? '');
+
+        if ($seoTitle !== '' && $seoTitle !== '--') {
+            echo '<title>' . htmlspecialchars($seoTitle) . '</title>' . PHP_EOL;
+            echo '<meta name="title" content="' . htmlspecialchars($seoTitle) . '">' . PHP_EOL;
+            echo '<meta property="og:title" content="' . htmlspecialchars($seoTitle) . '">' . PHP_EOL;
+        }
+
+        if ($seoDesc !== '' && $seoDesc !== '--') {
+            echo '<meta name="description" content="' . htmlspecialchars($seoDesc) . '">' . PHP_EOL;
+            echo '<meta property="og:description" content="' . htmlspecialchars($seoDesc) . '">' . PHP_EOL;
+        }
+
+        if ($seoKey !== '' && $seoKey !== '--') {
+            echo '<meta name="keywords" content="' . htmlspecialchars($seoKey) . '">' . PHP_EOL;
+        }
+
+        if ($analyticsCode !== '' && $analyticsCode !== '--') {
+            echo $analyticsCode;
+        }
+
+        $bgStyle = 'background-color:#f8f9fa;';
+        if (!empty($data['options']['enable_bg_image']) && $data['options']['enable_bg_image'] === 'enabled' && !empty($data['options']['background_image'])) {
+            $bgImage = $data['options']['background_image'];
+            $bgStyle = "background-image: url('{$bgImage}'); background-size: cover; background-position: center; background-repeat: no-repeat; background-attachment: fixed;";
+        }
+    ?>
+
     <style>
         .btn-primary {
             --tblr-btn-border-color: transparent;
@@ -46,7 +78,7 @@
         }
     </style>
 </head>
-<body style="background-color: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+<body style="<?= $bgStyle ?> font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
     <div class="container container-tight py-4">
         <div class="text-center mb-4">
             <img src="<?php echo $data['brand']['logo'];?>" alt="" style=" height: 40px; ">
@@ -124,7 +156,7 @@
           <div class="card-body">
             <form action="" method="POST" id="form" enctype="multipart/form-data">
                 <?php pp_renderFormFields('payment-link-default', $data); ?>
-                <button type="submit" id="payButton" class="btn btn-primary w-100"><?php echo $data['lang']['pay_now']?></button>
+                <button type="submit" id="payButton" class="btn btn-primary w-100"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-credit-card"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 8a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-12a3 3 0 0 1 -3 -3l0 -8" /><path d="M3 10l18 0" /><path d="M7 15l.01 0" /><path d="M11 15l2 0" /></svg> <?php echo $data['lang']['pay_now']?></button>
             </form>
           </div>
         </div>
@@ -144,11 +176,9 @@
                         <div class="form-control-wrap">
                             <select class="form-select" id="model-languages" onchange="hitLanguage()">
                                 <option value="" selected><?php echo $data['lang']['select_a_language']?></option>
-                                <option value="en">English</option>
-                                <option value="bn">বাংলা</option>
-                                <option value="hi">हिन्दी</option>
-                                <option value="ur">اردو</option>
-                                <option value="ar">العربية</option>
+                                <?php foreach ($data['supported_languages'] ?? [] as $code => $language): ?>
+                                    <option value="<?= htmlspecialchars($code) ?>"><?= htmlspecialchars($language) ?></option>
+                                <?php endforeach; ?>
                             </select>
                         </div>
                     </div>
@@ -166,7 +196,7 @@
     ?>
 
 
-    <script>
+    <script data-cfasync="false">
         function hitLanguage(){
             var language = document.querySelector("#model-languages").value;
 
@@ -189,14 +219,14 @@
                     dataType: 'json',
                     data: formData, 
                     success: function(data) {
-                        document.querySelector("#payButton").innerHTML = '<?php echo $data['lang']['pay_now']?>';
+                        document.querySelector("#payButton").innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-credit-card"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 8a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-12a3 3 0 0 1 -3 -3l0 -8" /><path d="M3 10l18 0" /><path d="M7 15l.01 0" /><path d="M11 15l2 0" /></svg> <?php echo $data['lang']['pay_now']?>';
 
                         if (data.status == "true") {
                             location.href = data.redirect;
                         } else {
                             createToast({
-                                title: response.title,
-                                description: response.message,
+                                title: data.title,
+                                description: data.message,
                                 svg: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#d63939" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-exclamation-circle"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M12 9v4" /><path d="M12 16v.01" /></svg>`,
                                 timeout: 6000
                             });
@@ -204,8 +234,8 @@
                     },
                     error: function(xhr, status, error) {
                         createToast({
-                            title: 'Something Wrong!',
-                            description: 'For further assistance, please contact our support team.',
+                            title: '<?php echo addslashes($data['lang']['something_wrong'])?>',
+                            description: '<?php echo addslashes($data['lang']['support_contact_text'])?>',
                             svg: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#d63939" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-exclamation-circle"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M12 9v4" /><path d="M12 16v.01" /></svg>`,
                             timeout: 6000
                         });

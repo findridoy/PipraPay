@@ -12,7 +12,7 @@
     <meta name="author" content="QubePlug Bangladesh">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Requirement - PipraPay</title>
-    <link rel="shortcut icon" href="<?= $piprapay_favicon ?? '' ?>">
+    <link rel="shortcut icon" href="<?= $piprapay_favicon ?? '--' ?>">
 
     <link rel="stylesheet" href="<?php echo $site_url ?>assets/css/tabler.min.css?v=1.5" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/css/tabler-vendors.min.css" />

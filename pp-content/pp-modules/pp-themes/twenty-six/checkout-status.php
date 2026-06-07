@@ -7,6 +7,18 @@
     if(isset($_GET['receipt'])){
         pp_downloadReceiptPDF($data);
     }
+
+    if(isset($_GET['lang'])){
+        if($_GET['lang'] !== ""){
+            pp_set_lang($_GET['lang']);
+?>
+            <script>
+                location.href = '?lang=';
+            </script>
+<?php
+            exit();
+        }
+    }
 ?>
 
 <!DOCTYPE html>
@@ -90,6 +102,11 @@
 <body style="<?= $bgStyle ?>" loading="lazy">
     <div class="container container-tight py-4">
         <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-end border rounded p-2 mb-3">
+                    <div style="text-align: right; cursor: pointer; color: <?php echo $data['options']['primary_color'];?>" data-bs-target="#modal-language" data-bs-toggle="modal"><svg xmlns="http://www.w3.org/2000/svg" style=" padding: 6px; background-color: <?php echo pp_hexToRgba($data['options']['primary_color'], 0.05)?>; border-radius: 100%; width: 32px; height: 32px; " viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-language"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 6.371c0 4.418 -2.239 6.629 -5 6.629" /><path d="M4 6.371h7" /><path d="M5 9c0 2.144 2.252 3.908 6 4" /><path d="M12 20l4 -9l4 9" /><path d="M19.1 18h-6.2" /><path d="M6.694 3l.793 .582" /></svg></div>
+                </div>
+            </div>
             <div class="card-body text-center">
 
                 <?php
@@ -167,7 +184,7 @@
                             </tr>
                             <tr>
                                 <th><?php echo $data['lang']['net_amount']?></th>
-                                <td><?php echo money_round($data['transaction']['amount']-$data['transaction']['discount_amount']+$data['transaction']['processing_fee'] ?? 0, 2); ?> <?php echo $data['transaction']['currency'] ?? 'BDT'; ?></td>
+                                <td><?php echo money_round(($data['transaction']['amount'] ?? 0) - ($data['transaction']['discount_amount'] ?? 0) + ($data['transaction']['processing_fee'] ?? 0), 2); ?> <?php echo $data['transaction']['currency'] ?? 'BDT'; ?></td>
                             </tr>
                             <tr>
                                 <th><?php echo $data['lang']['net_local_amount']?></th>
@@ -198,8 +215,44 @@
         <center class="footer-branding" style="margin-top: 20px;"><?php echo $data['options']['watermark_text'];?></center>
     </div>
 
+    <div class="modal fade" id="modal-language" data-bs-keyboard="false" tabindex="-1" aria-labelledby="scrollableLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-top">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="scrollableLabel"><?php echo $data['lang']['select_language']?></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group mt-1">
+                        <label for="" class="form-label"><?php echo $data['lang']['language']?> <span class="text-danger">*</span></label>
+                        <div class="form-control-wrap">
+                            <select class="form-select" id="model-languages" onchange="hitLanguage()">
+                                <option value="" selected><?php echo $data['lang']['select_a_language']?></option>
+                                <?php foreach ($data['supported_languages'] ?? [] as $code => $language): ?>
+                                    <option value="<?= htmlspecialchars($code) ?>"><?= htmlspecialchars($language) ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn me-auto" data-bs-dismiss="modal"><?php echo $data['lang']['close']?></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <?php
        echo pp_assets('footer');
     ?>
+
+    <script data-cfasync="false">
+        function hitLanguage(){
+            var language = document.querySelector("#model-languages").value;
+            if(language !== ""){
+                location.href = '?lang=' + language;
+            }
+        }
+    </script>
 </body>
 </html>

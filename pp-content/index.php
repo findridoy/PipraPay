@@ -1,5 +1,5 @@
 <?php
     if (!defined('PipraPay_INIT')) {
         http_response_code(403);
-        exit('Direct access not allowed');
+        exit('Direct access not allowed for security reasons');
     }

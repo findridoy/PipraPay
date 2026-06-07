@@ -183,7 +183,7 @@
                                         <!-- vertical border -->
                                         <div class="mx-auto border-top" style="height: 1px;"></div>
 
-                                        <div class="fw-semibold small mt-2 mb-2"><?php echo $row['display']?></div>
+                                        <div class="fw-semibold small mt-2 mb-2"><?php echo htmlspecialchars($row['display'])?></div>
                                     </div>
                                 </div>
                     <?php
@@ -214,7 +214,7 @@
                                         <!-- vertical border -->
                                         <div class="mx-auto border-top" style="height: 1px;"></div>
 
-                                        <div class="fw-semibold small mt-2 mb-2"><?php echo $row['display']?></div>
+                                        <div class="fw-semibold small mt-2 mb-2"><?php echo htmlspecialchars($row['display'])?></div>
                                     </div>
                                 </div>
                     <?php
@@ -245,7 +245,7 @@
                                         <!-- vertical border -->
                                         <div class="mx-auto border-top" style="height: 1px;"></div>
 
-                                        <div class="fw-semibold small mt-2 mb-2"><?php echo $row['display']?></div>
+                                        <div class="fw-semibold small mt-2 mb-2"><?php echo htmlspecialchars($row['display'])?></div>
                                     </div>
                                 </div>
                     <?php
@@ -271,7 +271,7 @@
                 <div id="gateways-support" class="mt-1 row g-3 text-center"  style="display: none;">
                     <?php if(!empty($support['email']) && $support['email'] != '--'): ?>
                         <div class="col-6 col-md-4" style="cursor: pointer">
-                            <a href="mailto:<?php echo $support['email']?>" target="blank">
+                            <a href="mailto:<?php echo $support['email']?>" target="_blank">
                                 <div class="border rounded">
                                     <div style="height: 70px; display: flex; align-items: center; justify-content: center;">
                                         <svg xmlns="http://www.w3.org/2000/svg" style="width:30px; height: 30px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-mail"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10" /><path d="M3 7l9 6l9 -6" /></svg>
@@ -286,7 +286,7 @@
 
                     <?php if(!empty($support['phone']) && $support['phone'] != '--'): ?>
                         <div class="col-6 col-md-4" style="cursor: pointer">
-                            <a href="tel:<?php echo $support['phone']?>" target="blank">
+                            <a href="tel:<?php echo $support['phone']?>" target="_blank">
                                 <div class="border rounded">
                                     <div style="height: 70px; display: flex; align-items: center; justify-content: center;">
                                         <svg xmlns="http://www.w3.org/2000/svg" style="width:30px; height: 30px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-phone-calling"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 4h4l2 5l-2.5 1.5a11 11 0 0 0 5 5l1.5 -2.5l5 2v4a2 2 0 0 1 -2 2a16 16 0 0 1 -15 -15a2 2 0 0 1 2 -2" /><path d="M15 7l0 .01" /><path d="M18 7l0 .01" /><path d="M21 7l0 .01" /></svg>
@@ -301,7 +301,7 @@
 
                     <?php if(!empty($support['whatsapp']) && $support['whatsapp'] != '--'): ?>
                         <div class="col-6 col-md-4" style="cursor: pointer">
-                            <a href="https://wa.me/<?php echo $support['whatsapp']?>" target="blank">
+                            <a href="https://wa.me/<?php echo $support['whatsapp']?>" target="_blank">
                                 <div class="border rounded">
                                     <div style="height: 70px; display: flex; align-items: center; justify-content: center;">
                                         <svg xmlns="http://www.w3.org/2000/svg" style="width:30px; height: 30px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-brand-whatsapp"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 21l1.65 -3.8a9 9 0 1 1 3.4 2.9l-5.05 .9" /><path d="M9 10a.5 .5 0 0 0 1 0v-1a.5 .5 0 0 0 -1 0v1a5 5 0 0 0 5 5h1a.5 .5 0 0 0 0 -1h-1a.5 .5 0 0 0 0 1" /></svg>
@@ -316,7 +316,7 @@
 
                     <?php if(!empty($support['telegram']) && $support['telegram'] != '--'): ?>
                         <div class="col-6 col-md-4" style="cursor: pointer">
-                            <a href="<?php echo $support['telegram']?>" target="blank">
+                            <a href="<?php echo $support['telegram']?>" target="_blank">
                                 <div class="border rounded">
                                     <div style="height: 70px; display: flex; align-items: center; justify-content: center;">
                                         <svg xmlns="http://www.w3.org/2000/svg" style="width:30px; height: 30px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-brand-telegram"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M15 10l-4 4l6 6l4 -16l-18 7l4 2l2 6l3 -4" /></svg>
@@ -331,7 +331,7 @@
 
                     <?php if(!empty($support['website']) && $support['website'] != '--'): ?>
                         <div class="col-6 col-md-4" style="cursor: pointer">
-                            <a href="<?php echo $support['website']?>" target="blank">
+                            <a href="<?php echo $support['website']?>" target="_blank">
                                 <div class="border rounded">
                                     <div style="height: 70px; display: flex; align-items: center; justify-content: center;">
                                         <svg xmlns="http://www.w3.org/2000/svg" style="width:30px; height: 30px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-world-www"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M19.5 7a9 9 0 0 0 -7.5 -4a8.991 8.991 0 0 0 -7.484 4" /><path d="M11.5 3a16.989 16.989 0 0 0 -1.826 4" /><path d="M12.5 3a16.989 16.989 0 0 1 1.828 4" /><path d="M19.5 17a9 9 0 0 1 -7.5 4a8.991 8.991 0 0 1 -7.484 -4" /><path d="M11.5 21a16.989 16.989 0 0 1 -1.826 -4" /><path d="M12.5 21a16.989 16.989 0 0 0 1.828 -4" /><path d="M2 10l1 4l1.5 -4l1.5 4l1 -4" /><path d="M17 10l1 4l1.5 -4l1.5 4l1 -4" /><path d="M9.5 10l1 4l1.5 -4l1.5 4l1 -4" /></svg>
@@ -346,7 +346,7 @@
 
                     <?php if(!empty($support['messenger']) && $support['messenger'] != '--'): ?>
                         <div class="col-6 col-md-4" style="cursor: pointer">
-                            <a href="<?php echo $support['messenger']?>" target="blank">
+                            <a href="<?php echo $support['messenger']?>" target="_blank">
                                 <div class="border rounded">
                                     <div style="height: 70px; display: flex; align-items: center; justify-content: center;">
                                         <svg xmlns="http://www.w3.org/2000/svg" style="width:30px; height: 30px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-brand-messenger"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 20l1.3 -3.9a9 8 0 1 1 3.4 2.9l-4.7 1" /><path d="M8 13l3 -2l2 2l3 -2" /></svg>
@@ -363,7 +363,7 @@
 
                     <?php if(!empty($support['fb_page']) && $support['fb_page'] != '--'): ?>
                         <div class="col-6 col-md-4" style="cursor: pointer">
-                            <a href="<?php echo $support['fb_page']?>" target="blank">
+                            <a href="<?php echo $support['fb_page']?>" target="_blank">
                                 <div class="border rounded">
                                     <div style="height: 70px; display: flex; align-items: center; justify-content: center;">
                                         <svg xmlns="http://www.w3.org/2000/svg" style="width:30px; height: 30px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-brand-facebook"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 10v4h3v7h4v-7h3l1 -4h-4v-2a1 1 0 0 1 1 -1h3v-4h-3a5 5 0 0 0 -5 5v2h-3" /></svg>
@@ -389,11 +389,11 @@
                             </li>
                             <li class="d-flex justify-content-between py-1 border-bottom" style="height: 40px;align-items: center;">
                                 <span><?php echo $data['lang']['subtotal']?></span>
-                                <span class="fw-semibold"><?php echo money_round(0, 2).$data['transaction']['currency']; ?></span>
+                                <span class="fw-semibold"><?php echo money_round(($data['transaction']['amount'] ?? 0) - ($data['transaction']['discount_amount'] ?? 0), 2).$data['transaction']['currency']; ?></span>
                             </li>
                             <li class="d-flex justify-content-between py-1 border-bottom" style="height: 40px;align-items: center;">
                                 <span><?php echo $data['lang']['discount']?></span>
-                                <span class="fw-semibold"><?php echo money_round(0, 2).$data['transaction']['currency']; ?></span>
+                                <span class="fw-semibold"><?php echo money_round($data['transaction']['discount_amount'] ?? 0, 2).$data['transaction']['currency']; ?></span>
                             </li>
                             <li class="d-flex justify-content-between py-1 border-bottom" style="height: 40px;align-items: center;">
                                 <span><?php echo $data['lang']['total']?></span>
@@ -408,14 +408,14 @@
                         <div class="accordion" id="accordion-default">
                             <?php
                                 $count = 0;
-                                foreach($data['faqs'] as $faq){
+                                foreach($data['faqs'] ?? [] as $faq){
                                     $count = $count+1;
                             ?>
                                     <div class="accordion-item">
                                         <div class="accordion-header">
                                             <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-<?php echo $count?>-default"
                                                 aria-expanded="true">
-                                                <?php echo $faq['title']?>
+                                                <?php echo htmlspecialchars($faq['title'])?>
                                                 <div class="accordion-button-toggle">
                                                 <!-- Download SVG icon from http://tabler.io/icons/icon/chevron-down -->
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -438,7 +438,9 @@
                     </div>
                 </div>
 
-              <div class="btn btn-primary w-100 mt-3"><?php echo $data['lang']['pay_now']?> (<?php echo money_round($data['transaction']['amount'], 2).$data['transaction']['currency'];?>)</div>
+              <div class="text-center mt-3 py-2 px-3 rounded" style="background-color:<?php echo pp_hexToRgba($data['options']['primary_color'], 0.08);?>;color:<?php echo $data['options']['primary_color'];?>;font-weight:600;font-size:1rem;">
+                  <?php echo $data['lang']['total']?>: <?php echo money_round($data['transaction']['amount'], 2).$data['transaction']['currency'];?>
+              </div>
           </div>
         </div>
 
@@ -458,11 +460,9 @@
                         <div class="form-control-wrap">
                             <select class="form-select" id="model-languages" onchange="hitLanguage()">
                                 <option value="" selected><?php echo $data['lang']['select_a_language']?></option>
-                                <option value="en">English</option>
-                                <option value="bn">বাংলা</option>
-                                <option value="hi">हिन्दी</option>
-                                <option value="ur">اردو</option>
-                                <option value="ar">العربية</option>
+                                <?php foreach ($data['supported_languages'] ?? [] as $code => $language): ?>
+                                    <option value="<?= htmlspecialchars($code) ?>"><?= htmlspecialchars($language) ?></option>
+                                <?php endforeach; ?>
                             </select>
                         </div>
                     </div>
@@ -500,7 +500,7 @@
 
                     Object.values(rows).forEach(r => r.style.display = 'none');
 
-                    if (rows[tab]) rows[tab].style.display = 'flex';
+                    if (rows[tab]) rows[tab].style.display = rows[tab].classList.contains('row') ? 'flex' : 'block';
                 });
             });
 

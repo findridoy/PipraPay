@@ -66,7 +66,8 @@
 
             // Write config file
             $configContent = "<?php
-    \$db_host = '".addslashes($host)."';
+    \$db_host = '".addslashes($host). "';
+    \$db_port = '" . addslashes($port) . "'; 
     \$db_user = '".addslashes($username)."';
     \$db_pass = '".addslashes($password)."';
     \$db_name = '".addslashes($dbname)."';
